@@ -116,21 +116,24 @@ def predict_direction(game: SnakeGame, params, mask_danger=True):
 
 
 if __name__ == "__main__":
-    from game import RIGHT, UP, new_game
+    from game import RIGHT, new_game
 
     params = initialize_weights()
     assert params["W1"].shape == (11, 64)
     assert params["W3"].shape == (32, 4)
 
-    X = np.zeros((4, FEATURE_SIZE))
-    y = np.eye(N_ACTIONS)[[0, 1, 2, 3]]
+    rng = np.random.default_rng(0)
+    X = rng.normal(size=(32, FEATURE_SIZE))
+    y = np.eye(N_ACTIONS)[rng.integers(0, N_ACTIONS, size=32)]
     pred, cache = forward(X, params)
-    assert pred.shape == (4, 4)
+    assert pred.shape == (32, 4)
     loss = cross_entropy_loss(pred, y)
-    grads = backward(pred, y, cache, params)
-    params = sgd_step(params, grads, lr=0.1)
+    for _ in range(20):
+        pred, cache = forward(X, params)
+        grads = backward(pred, y, cache, params)
+        params = sgd_step(params, grads, lr=0.5)
     loss2 = cross_entropy_loss(forward(X, params)[0], y)
-    assert loss2 < loss
+    assert loss2 < loss, (loss, loss2)
 
     g = new_game(width=5, height=5, seed=0)
     g.snake = [(2, 2), (2, 1), (2, 0)]
@@ -149,6 +152,6 @@ if __name__ == "__main__":
     assert masked2[INDEX_TO_DIR.index(RIGHT)] == 0.0
 
     print(f"arch: {ARCHITECTURE}")
-    print(f"loss {loss:.4f} → {loss2:.4f}")
+    print(f"loss {loss:.4f} → {loss2:.4f} after 20 SGD steps")
     print(f"predict dir: {direction}")
     print("nn ok")
