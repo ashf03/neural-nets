@@ -13,3 +13,4 @@ tic-tac-toe/plan.md
 # generated data / weights
 **/dataset.npz
 **/*.npz
+**/weights.npz
