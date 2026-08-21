@@ -8,4 +8,5 @@ source .venv/bin/activate
 python snake/game.py
 python snake/encode.py
 python snake/heuristic.py
+python snake/dataset.py
 ```
