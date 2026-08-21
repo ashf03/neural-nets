@@ -4,7 +4,7 @@ from pathlib import Path
 
 import numpy as np
 
-from board import EMPTY, O, X, decode, is_draw, is_terminal, legal_moves, place, winner
+import board as B
 from dataset import load_dataset
 from minimax import best_move, best_move_only
 from nn import predict_move
@@ -13,36 +13,40 @@ from train import load_weights
 out_dir = Path(__file__).resolve().parent
 
 
-def score_after_move(board, move, player):
+def score_after_move(state, move, player):
     """Outcome for `player` after playing `move`, assuming perfect replies."""
-    placed = place(board, move, player)
-    w = winner(placed)
+    placed = B.place(state, move, player)
+    w = B.winner(placed)
     if w == player:
         return 1
     if w is not None:
         return -1
-    if is_draw(placed):
+    if B.is_draw(placed):
         return 0
     _, opp_score = best_move(placed, -player)
     return -opp_score
 
 
-def all_optimal_moves(board, player):
+def all_optimal_moves(state, player):
     """Every legal move that achieves the minimax-optimal score."""
-    _, best_score = best_move(board, player)
-    return [m for m in legal_moves(board) if score_after_move(board, m, player) == best_score]
+    _, best_score = best_move(state, player)
+    return [
+        m
+        for m in B.legal_moves(state)
+        if score_after_move(state, m, player) == best_score
+    ]
 
 
-def player_to_move(board):
+def player_to_move(state):
     """X starts; equal piece counts → X, else O."""
-    xs = sum(1 for c in board if c == X)
-    os = sum(1 for c in board if c == O)
-    return X if xs == os else O
+    xs = sum(1 for c in state if c == B.X)
+    os = sum(1 for c in state if c == B.O)
+    return B.X if xs == os else B.O
 
 
-def evaluate(X, y, params, seed=0, holdout_frac=0.2):
+def evaluate(features, labels, params, seed=0, holdout_frac=0.2):
     rng = np.random.default_rng(seed)
-    n = len(X)
+    n = len(features)
     hold = rng.permutation(n)[: max(1, int(n * holdout_frac))]
 
     strict_ok = 0
@@ -50,19 +54,19 @@ def evaluate(X, y, params, seed=0, holdout_frac=0.2):
     illegal = 0
 
     for i in hold:
-        board = decode(X[i])
-        if is_terminal(board):
+        state = B.decode(features[i])
+        if B.is_terminal(state):
             continue
-        player = player_to_move(board)
-        net_move, _ = predict_move(board, params)
+        player = player_to_move(state)
+        net_move, _ = predict_move(state, params)
 
-        if board[net_move] != EMPTY:
+        if state[net_move] != B.EMPTY:
             illegal += 1
             continue
 
-        if net_move == best_move_only(board, player):
+        if net_move == best_move_only(state, player):
             strict_ok += 1
-        if net_move in all_optimal_moves(board, player):
+        if net_move in all_optimal_moves(state, player):
             optimal_ok += 1
 
     n_eval = len(hold)
@@ -83,8 +87,8 @@ if __name__ == "__main__":
         raise SystemExit("missing dataset.npz — run dataset.py first")
 
     params = load_weights(weights)
-    X, y = load_dataset(data)
-    stats = evaluate(X, y, params)
+    features, labels = load_dataset(data)
+    stats = evaluate(features, labels, params)
     print(f"held-out boards: {stats['n']}")
     print(f"strict match (net == one minimax pick): {stats['strict_acc']:.4f}")
     print(f"optimal match (net is any perfect move): {stats['optimal_acc']:.4f}")
