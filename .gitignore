@@ -14,3 +14,4 @@ tic-tac-toe/plan.md
 **/dataset.npz
 **/*.npz
 **/weights.npz
+**/weights_improved.npz

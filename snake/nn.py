@@ -115,6 +115,26 @@ def predict_direction(game: SnakeGame, params, mask_danger=True):
     return INDEX_TO_DIR[idx], masked
 
 
+def sample_direction(game: SnakeGame, params, rng, mask_danger=True):
+    """Sample an action from the masked policy (for exploration / REINFORCE)."""
+    probs, _ = forward(encode(game).reshape(1, FEATURE_SIZE), params)
+    masked = mask_actions(probs[0], game, mask_danger=mask_danger)
+    idx = int(rng.choice(N_ACTIONS, p=masked))
+    return INDEX_TO_DIR[idx], masked, idx
+
+
+def scale_grads(grads, scale):
+    return {k: v * scale for k, v in grads.items()}
+
+
+def add_grads(acc, grads):
+    if acc is None:
+        return {k: v.copy() for k, v in grads.items()}
+    for k in acc:
+        acc[k] = acc[k] + grads[k]
+    return acc
+
+
 if __name__ == "__main__":
     from game import RIGHT, new_game
 

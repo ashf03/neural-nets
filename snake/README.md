@@ -15,6 +15,8 @@ python snake/eval.py
 python snake/play.py                  # watch the net
 python snake/play.py --policy heuristic
 python snake/play.py --policy random --delay 0.05
+python snake/improve.py               # REINFORCE fine-tune → weights_improved.npz
+python snake/play.py --weights snake/weights_improved.npz
 ```
 
-Weights → `weights.npz` (gitignored).
+Weights → `weights.npz` / `weights_improved.npz` (gitignored).

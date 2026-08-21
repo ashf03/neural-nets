@@ -33,11 +33,12 @@ def play(
     max_steps: int = 500,
     width: int = 10,
     height: int = 10,
+    weights_path: Path | None = None,
 ):
     if policy_name == "net":
-        weights = out_dir / "weights.npz"
+        weights = Path(weights_path) if weights_path else out_dir / "weights.npz"
         if not weights.exists():
-            raise SystemExit("missing weights.npz — run train.py first")
+            raise SystemExit(f"missing {weights} — run train.py / improve.py first")
         params = load_weights(weights)
 
         def policy(game):
@@ -92,10 +93,17 @@ if __name__ == "__main__":
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--delay", type=float, default=0.12, help="seconds between frames")
     p.add_argument("--max-steps", type=int, default=500)
+    p.add_argument(
+        "--weights",
+        type=Path,
+        default=None,
+        help="net weights path (default: snake/weights.npz)",
+    )
     args = p.parse_args()
     play(
         policy_name=args.policy,
         seed=args.seed,
         delay=args.delay,
         max_steps=args.max_steps,
+        weights_path=args.weights,
     )
