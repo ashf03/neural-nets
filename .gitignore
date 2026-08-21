@@ -9,3 +9,7 @@ __pycache__/
 snake/plan.md
 sudoku/plan.md
 tic-tac-toe/plan.md
+
+# generated data / weights
+**/dataset.npz
+**/*.npz
