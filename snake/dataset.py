@@ -1,31 +1,25 @@
-"""Collect (state encoding, action) pairs from heuristic rollouts."""
+"""Collect (state encoding, absolute U/D/L/R action) from heuristic rollouts."""
 
 from pathlib import Path
 
 import numpy as np
 
-from encode import FEATURE_SIZE, N_ACTIONS, encode
+from encode import FEATURE_SIZE, N_ACTIONS, encode, one_hot_dir
 from game import new_game
-from heuristic import choose_action, choose_direction
+from heuristic import choose_direction
 
 out_dir = Path(__file__).resolve().parent
 
 
-def one_hot_action(action: int, n=N_ACTIONS) -> np.ndarray:
-    y = np.zeros(n, dtype=np.float64)
-    y[action] = 1.0
-    return y
-
-
 def rollout(seed: int, width=10, height=10, max_steps=500):
-    """Yield (features, one_hot_action) each tick until death or max_steps."""
+    """Yield (features, one_hot U/D/L/R) each tick until death or max_steps."""
     game = new_game(width=width, height=height, seed=seed)
     steps = 0
     while game.alive and steps < max_steps:
         feats = encode(game)
-        action = choose_action(game)
-        yield feats, one_hot_action(action)
-        game.step(choose_direction(game))
+        direction = choose_direction(game)
+        yield feats, one_hot_dir(direction)
+        game.step(direction)
         steps += 1
 
 
@@ -68,5 +62,5 @@ if __name__ == "__main__":
     print(f"wrote {path}")
     print(f"samples: {len(X)}")
     print(f"X shape: {X.shape}  y shape: {y.shape}")
-    print(f"action counts L/S/R: {y.sum(axis=0).astype(int)}")
+    print(f"action counts U/D/L/R: {y.sum(axis=0).astype(int)}")
     print("dataset ok")

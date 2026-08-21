@@ -93,7 +93,15 @@ def absolute_dir_to_relative(game: SnakeGame, direction: tuple[int, int]) -> int
 
 
 FEATURE_SIZE = 11
-N_ACTIONS = 3  # left / straight / right
+N_ACTIONS = 4  # absolute U, D, L, R (same order as HEADING_ORDER)
+INDEX_TO_DIR = HEADING_ORDER
+DIR_TO_INDEX = {d: i for i, d in enumerate(INDEX_TO_DIR)}
+
+
+def one_hot_dir(direction: tuple[int, int]) -> np.ndarray:
+    y = np.zeros(N_ACTIONS, dtype=np.float64)
+    y[DIR_TO_INDEX[direction]] = 1.0
+    return y
 
 
 if __name__ == "__main__":
