@@ -7,4 +7,5 @@ From-scratch NumPy net (state → U/D/L/R). See local `plan.md` (gitignored).
 source .venv/bin/activate
 python snake/game.py
 python snake/encode.py
+python snake/heuristic.py
 ```
