@@ -2,3 +2,10 @@
 __pycache__/
 *.pyc
 .DS_Store
+.mplconfig/
+
+# local planning only — do not push
+**/plan.md
+snake/plan.md
+sudoku/plan.md
+tic-tac-toe/plan.md

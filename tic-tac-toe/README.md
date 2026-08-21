@@ -1,3 +1,9 @@
 # tic-tac-toe
 
-From-scratch neural net (planned).
+From-scratch NumPy net (board → move). See local `plan.md` (gitignored).
+
+```bash
+# from repo root
+source .venv/bin/activate
+python tic-tac-toe/board.py
+```
