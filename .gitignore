@@ -15,3 +15,4 @@ tic-tac-toe/plan.md
 **/*.npz
 **/weights.npz
 **/weights_improved.npz
+**/weights_curriculum.npz

@@ -27,6 +27,8 @@ def train(
     batch_size=64,
     seed=42,
     val_frac=0.1,
+    params=None,
+    log_prefix="",
 ):
     rng = np.random.default_rng(seed)
     n = len(X)
@@ -36,7 +38,8 @@ def train(
     X_train, y_train = X[train_idx], y[train_idx]
     X_val, y_val = X[val_idx], y[val_idx]
 
-    params = initialize_weights(seed=seed)
+    if params is None:
+        params = initialize_weights(seed=seed)
     history = {"train_loss": [], "val_acc": []}
     N = len(X_train)
 
@@ -49,7 +52,7 @@ def train(
         for start in range(0, N, batch_size):
             end = min(start + batch_size, N)
             xb, yb = X_shuffled[start:end], y_shuffled[start:end]
-            pred, cache = forward(xb, params)
+            pred, cache = forward(xb, params)  # legal-only softmax via candidate bits
             epoch_loss += cross_entropy_loss(pred, yb)
             n_batches += 1
             grads = backward(pred, yb, cache, params)
@@ -57,12 +60,15 @@ def train(
 
         avg_loss = epoch_loss / n_batches
         val_pred, _ = forward(X_val, params)
+        # accuracy among legal classes only (illegal already ~0)
         val_acc = float(np.mean(np.argmax(val_pred, axis=1) == np.argmax(y_val, axis=1)))
         history["train_loss"].append(avg_loss)
         history["val_acc"].append(val_acc)
 
         if (epoch + 1) % 5 == 0 or epoch == 0:
-            print(f"epoch {epoch + 1:3d} | loss {avg_loss:.4f} | val_acc {val_acc:.4f}")
+            print(
+                f"{log_prefix}epoch {epoch + 1:3d} | loss {avg_loss:.4f} | val_acc {val_acc:.4f}"
+            )
 
     return params, history
 
