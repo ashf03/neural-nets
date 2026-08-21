@@ -1,3 +1,9 @@
 # snake
 
-From-scratch neural net (planned).
+From-scratch NumPy net (state → U/D/L/R). See local `plan.md` (gitignored).
+
+```bash
+# from repo root
+source .venv/bin/activate
+python snake/game.py
+```
