@@ -8,4 +8,5 @@ source .venv/bin/activate
 python tic-tac-toe/board.py
 python tic-tac-toe/minimax.py
 python tic-tac-toe/dataset.py
+python tic-tac-toe/nn.py
 ```
