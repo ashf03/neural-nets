@@ -11,6 +11,7 @@ python tic-tac-toe/dataset.py
 python tic-tac-toe/nn.py
 python tic-tac-toe/train.py
 python tic-tac-toe/eval.py
+python tic-tac-toe/play.py
 ```
 
 Weights land in `weights.npz` (gitignored).
