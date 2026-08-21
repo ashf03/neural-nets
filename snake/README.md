@@ -12,6 +12,9 @@ python snake/dataset.py
 python snake/nn.py
 python snake/train.py
 python snake/eval.py
+python snake/play.py                  # watch the net
+python snake/play.py --policy heuristic
+python snake/play.py --policy random --delay 0.05
 ```
 
 Weights → `weights.npz` (gitignored).
