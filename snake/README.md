@@ -11,6 +11,7 @@ python snake/heuristic.py
 python snake/dataset.py
 python snake/nn.py
 python snake/train.py
+python snake/eval.py
 ```
 
 Weights → `weights.npz` (gitignored).
