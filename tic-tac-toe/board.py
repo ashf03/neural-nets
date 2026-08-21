@@ -1,5 +1,7 @@
 """Tic-tac-toe board: 9 cells, win / draw / legal moves."""
 
+import numpy as np
+
 EMPTY, X, O = 0, 1, -1
 
 WINS = (
@@ -49,6 +51,17 @@ def place(board, index, player):
     return out
 
 
+def encode(board):
+    """Board → float vector of length 9: X=1, O=-1, empty=0."""
+    return np.asarray(board, dtype=np.float64)
+
+
+def decode(vec):
+    """Length-9 vector → board list (values cast to int)."""
+    arr = np.asarray(vec).reshape(9)
+    return [int(v) for v in arr]
+
+
 def render(board):
     marks = {EMPTY: ".", X: "X", O: "O"}
     rows = []
@@ -68,5 +81,12 @@ if __name__ == "__main__":
     b = place(b, 2, X)
     assert winner(b) == X
     assert legal_moves(b) == [3, 4, 5, 6, 7, 8]
+
+    v = encode(b)
+    assert v.shape == (9,)
+    assert np.array_equal(v, [1, 1, 1, 0, 0, 0, 0, 0, 0])
+    assert decode(v) == b
+
     print(render(b))
+    print("encode:", v)
     print("board ok")
