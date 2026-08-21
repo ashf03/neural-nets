@@ -57,7 +57,6 @@ def best_move(board, player):
     if winner(board) is not None:
         raise ValueError("game already over")
 
-    _minimax.cache_clear()
     score, move = _minimax(_key(board), player, player)
     return move, score
 
